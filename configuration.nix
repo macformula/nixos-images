@@ -31,6 +31,7 @@
   users.groups.gpio = {};
   # look at everything in gpio that is a gpiochip, make it readable and writable
   # to find gpio and other subsystems, look at /sys/bus/, and the /sys/ directory more broadly
+  #bcm2835-gpiomem is pi-specific but good since we are flipping registers
   services.udev.extraRules = ''
     SUBSYSTEM=="gpio", KERNEL=="gpiochip*", GROUP="gpio", MODE="0660"
   '';
