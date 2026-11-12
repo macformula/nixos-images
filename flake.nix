@@ -6,7 +6,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.racecar = {
         url = "github:macformula/racecar/353f479835308e5322d94e539065c0e1149f8b18";
-      }
+      };
     };
   };
 
