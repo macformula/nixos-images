@@ -22,6 +22,7 @@
           "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
           nixos-hardware.nixosModules.raspberry-pi-4
           ./configuration.nix
+          ./can-hat.nix
           (
             { pkgs, lib, ... }:
             {

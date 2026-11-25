@@ -19,6 +19,20 @@
     linkConfig.RequiredForOnline = "no";
   };
 
+  systemd.network.networks."40-can0" = {
+    matchConfig.Name = "can0";
+    canConfig = {
+      BitRate = 500000;
+      RestartSec = "100ms";
+    };
+  };
+
+  systemd.network.links."40-can0" = {
+    matchConfig.OriginalName = "can0";
+    linkConfig.TransmitQueueLength = 1000;
+  };
+  
+
   # use ethernet instead.
   networking.wireless.enable = false;
 
@@ -46,22 +60,36 @@
   };
   # for the same reason, this is ok
   security.sudo.wheelNeedsPassword = false;
+  nix.settings.trusted-users = [ "root" "pi" ];
 
+  # these can be quick-added with nixos-rebuild switch --flake .#rpi4-image --target-host pi@192.168.50.2 --sudo. That can be done elsewhere,
+  # but requires a reboot. 
   environment.systemPackages = with pkgs; [
     neovim # nvim
+    bat # very useful for reading through large text dumps
     tree # display files
     iproute2 # show ip (ip addr) (run man ip for more)
     libgpiod # talk to gpio (only for cli testing, actually talk to gpio in code)
-    tmux # run many things. Keep in mind that you can also tmux on your laptop and open many ssh terminals, but this is convenient
-    can-utils # can. Eventually reference this once we know what spi to can board we're using https://copperhilltech.com/blog/beginners-guide-to-using-socketcan-with-raspberry-pi-and-pican-board/
+    can-utils # can
     perf # useful
-    (pkgs.python314.withPackages (
-      ps: with ps; [
-
-      ]
-    ))
-    uv
+    python314 # python
+    stress-ng # see how this affects jitter
+    fd # extremely fast find
+    ripgrep # extremely fast grep
+    xxd # useful, lets you view binary dumps
+    hexyl # also lets you view binary dumps, try both and pick a favorite
+    dtc # lets you inspect the device tree by decompiling files, as `dtc -I dtb -O dts <file.dtb>
   ];
+  # I have my tmux set for alt, so this doesn't collide for me. It will for you unless you also set your tmux to alt.
+  programs.tmux = {
+    enable = true;
+    extraConfig = ''
+      bind C-i select-pane -t '{top-left}'
+      bind C-o select-pane -t '{top-right}'
+      bind C-j select-pane -t '{bottom-left}'
+      bind C-k select-pane -t '{bottom-right}'
+    '';
+  };
 
   system.stateVersion = "25.11";
 }
